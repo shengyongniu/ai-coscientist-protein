@@ -1,0 +1,10 @@
+# Protein scoring + multi-GPU training dependencies.
+# Install on the GPU instance: pip install -r requirements-protein.txt
+# Install torch matching your CUDA, e.g.:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu121
+torch>=2.2.0
+transformers>=4.42.0
+datasets>=2.20.0
+scipy>=1.11.0
+scikit-learn>=1.4.0
+matplotlib>=3.8.0
