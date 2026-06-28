@@ -4,8 +4,8 @@ cd /Users/syniu/ai-coscientist
 source .venv/bin/activate
 export AWS_REGION=us-west-2
 export COSCIENTIST_LLM_PROVIDER=bedrock
-export COSCIENTIST_MODEL_STRONG=us.anthropic.claude-opus-4-8
-export COSCIENTIST_MODEL_FAST=us.anthropic.claude-opus-4-8
+export COSCIENTIST_MODEL_STRONG=us.anthropic.claude-haiku-4-5-20251001-v1:0
+export COSCIENTIST_MODEL_FAST=us.anthropic.claude-haiku-4-5-20251001-v1:0
 mkdir -p data
 
 GOAL="Design improved single-domain antibody (nanobody) variants that bind the SARS-CoV-2 spike RBD with higher predicted stability and affinity than wild-type"
