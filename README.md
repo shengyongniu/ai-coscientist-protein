@@ -16,6 +16,10 @@ a final ranked design list plus a research overview.
   <img src="docs/images/ui_complete.png" width="900" alt="AI Co-Scientist web UI: live agent feed, Elo leaderboard, and research overview"/>
 </p>
 
+<p align="center"><img src="docs/images/architecture.svg" width="900" alt="Animated overview of the multi-agent protein design pipeline"/></p>
+
+<p align="center"><em>Live view of one round: the goal flows through the agent coalition while protein scores feed the Elo tournament.</em></p>
+
 ## Why this project
 
 It deliberately demonstrates four hard skills in one coherent system:
@@ -32,6 +36,10 @@ CPU heuristic scorer, so `pytest` and the full UI work offline. Add Bedrock for 
 GPU for real protein scores; add your trained checkpoint to ground the tournament in your own model.
 
 ## Three-layer architecture
+
+<p align="center"><img src="docs/images/architecture.svg" width="900" alt="Animated overview of the multi-agent protein design pipeline"/></p>
+
+<p align="center"><em>Live view of one round: the goal flows through the agent coalition while protein scores feed the Elo tournament.</em></p>
 
 ```mermaid
 flowchart TD
