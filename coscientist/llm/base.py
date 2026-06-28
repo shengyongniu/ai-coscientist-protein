@@ -128,4 +128,83 @@ def extract_json(text: str) -> Any:
             return json.loads(c)
         except (json.JSONDecodeError, ValueError):
             continue
+
+    # Salvage truncated JSON (e.g. the model hit max_tokens mid-object) by
+    # trimming to the last complete element and closing open brackets.
+    salvaged = _salvage_truncated_json(text)
+    if salvaged is not None:
+        return salvaged
+
     raise ValueError(f"No parseable JSON in LLM output: {text[:200]!r}")
+
+
+def _salvage_truncated_json(text: str) -> Any | None:
+    start = text.find("{")
+    bracket = text.find("[")
+    if bracket != -1 and (start == -1 or bracket < start):
+        start = bracket
+    if start == -1:
+        return None
+    s = text[start:]
+
+    # Walk the string tracking bracket depth (ignoring brackets inside strings),
+    # remembering the position after the last completed top-level-ish element.
+    depth = 0
+    in_str = False
+    esc = False
+    last_safe = -1
+    stack: list[str] = []
+    for i, ch in enumerate(s):
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+            continue
+        if ch == '"':
+            in_str = True
+        elif ch in "{[":
+            stack.append("}" if ch == "{" else "]")
+            depth += 1
+        elif ch in "}]":
+            if stack:
+                stack.pop()
+            depth -= 1
+        elif ch == "," and depth >= 1:
+            last_safe = i  # safe truncation point: end of a complete element
+
+    for cut in (len(s), last_safe):
+        if cut is None or cut < 0:
+            continue
+        frag = s[:cut].rstrip().rstrip(",")
+        # Re-close any still-open brackets.
+        d = 0
+        st: list[str] = []
+        instr = False
+        e = False
+        for ch in frag:
+            if instr:
+                if e:
+                    e = False
+                elif ch == "\\":
+                    e = True
+                elif ch == '"':
+                    instr = False
+                continue
+            if ch == '"':
+                instr = True
+            elif ch in "{[":
+                st.append("}" if ch == "{" else "]")
+            elif ch in "}]":
+                if st:
+                    st.pop()
+        if instr:
+            frag += '"'
+        closing = "".join(reversed(st))
+        try:
+            return json.loads(frag + closing)
+        except (json.JSONDecodeError, ValueError):
+            continue
+    return None

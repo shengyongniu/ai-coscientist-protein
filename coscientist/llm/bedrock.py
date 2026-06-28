@@ -68,6 +68,18 @@ class BedrockProvider(LLMProvider):
         # Models known to reject `temperature` in inferenceConfig.
         return "opus-4-8" not in model_id
 
+    @staticmethod
+    def _extract_text(resp: dict) -> str:
+        """Concatenate text from all text content blocks.
+
+        Some models return reasoning/other block types, or an empty content
+        list when they stop without producing text; handle those without
+        raising IndexError.
+        """
+        blocks = resp.get("output", {}).get("message", {}).get("content", []) or []
+        parts = [b["text"] for b in blocks if isinstance(b, dict) and "text" in b]
+        return "".join(parts)
+
     def _to_bedrock_messages(self, messages: list[LLMMessage]) -> list[dict]:
         return [{"role": m.role, "content": [{"text": m.content}]} for m in messages]
 
@@ -95,14 +107,22 @@ class BedrockProvider(LLMProvider):
         for attempt in range(self.max_retries):
             try:
                 resp = self._client.converse(**kwargs)
-                out = resp["output"]["message"]["content"][0]["text"]
+                out = self._extract_text(resp)
+                stop = resp.get("stopReason", "")
+                if not out and stop == "max_tokens" and attempt < self.max_retries - 1:
+                    # Ran out of tokens before emitting text (e.g. long reasoning);
+                    # retry with a larger budget.
+                    kwargs["inferenceConfig"]["maxTokens"] = min(
+                        kwargs["inferenceConfig"]["maxTokens"] * 2, 8192
+                    )
+                    continue
                 usage = resp.get("usage", {})
                 r = LLMResponse(
                     text=out,
                     input_tokens=usage.get("inputTokens", 0),
                     output_tokens=usage.get("outputTokens", 0),
                     model=model_id,
-                    stop_reason=resp.get("stopReason", ""),
+                    stop_reason=stop,
                 )
                 self.usage.record(r)
                 return r
