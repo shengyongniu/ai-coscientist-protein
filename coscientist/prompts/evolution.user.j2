@@ -1,0 +1,23 @@
+RESEARCH GOAL:
+{{ goal }}
+
+{% if protein_mode %}
+These are PROTEIN variants. Output full mutated amino-acid sequences in the
+"sequence" field. Stay within a few mutations of the parents and preserve length.
+SEED_SEQUENCE: {{ seed_sequence }}
+{% endif %}
+
+TOP-RANKED PARENT HYPOTHESES (best first):
+{% for h in parents %}
+[{{ loop.index }}] {{ h.title }} (Elo {{ "%.0f"|format(h.elo) }}{% if h.protein_score is not none %}, score {{ "%.4f"|format(h.protein_score) }}{% endif %})
+    {{ h.summary }}
+{% if h.sequence %}    seq: {{ h.sequence }}{% endif %}
+{% endfor %}
+
+{% if feedback %}
+REVIEWER FEEDBACK to address:
+{{ feedback }}
+{% endif %}
+
+Using the "{{ strategy }}" strategy, generate exactly {{ count }} improved
+hypotheses now.
