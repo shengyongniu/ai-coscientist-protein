@@ -21,7 +21,7 @@ class Agent:
         *,
         model: str = "strong",
         temperature: float = 0.7,
-        max_tokens: int = 3000,
+        max_tokens: int = 4096,
         retries: int = 2,
         **context,
     ):
