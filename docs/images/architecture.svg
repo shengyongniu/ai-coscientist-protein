@@ -1,0 +1,290 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 540" width="900" height="540" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title>Animated overview of the multi-agent protein design pipeline</title>
+  <desc>A research goal flows into a Supervisor, then through the Layer 1 agent coalition (Generation, Reflection, Proximity, Ranking via an Elo tournament, Evolution, Meta-review), while Layer 2 protein scoring tools (ESM2 PLL, heuristic, fine-tuned predictor) feed objective scores into Ranking. The loop repeats forever.</desc>
+
+  <style>
+    :root { color-scheme: light dark; }
+    .bg        { fill: #0f1729; }
+    .panel     { fill: #131d33; stroke: #243352; stroke-width: 1; }
+    .panel-lbl { fill: #8aa0c6; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+
+    /* node hues */
+    .agent     { fill: #1b2a4a; stroke: #4f7cc7; stroke-width: 1.6; }
+    .agent-t   { fill: #dce8ff; font-size: 14px; font-weight: 600; }
+    .agent-s   { fill: #93b2e6; font-size: 10.5px; }
+
+    .score     { fill: #15322b; stroke: #34b88a; stroke-width: 1.6; }
+    .score-t   { fill: #d6f7ec; font-size: 12.5px; font-weight: 600; }
+    .score-s   { fill: #79d8bb; font-size: 10px; }
+
+    .io        { fill: #3a2540; stroke: #c977c0; stroke-width: 1.6; }
+    .io-t      { fill: #f6dcf3; font-size: 13px; font-weight: 700; }
+    .io-s      { fill: #dca9d6; font-size: 10px; }
+
+    .sup       { fill: #2a2f12; stroke: #d4b13c; stroke-width: 1.8; }
+    .sup-t     { fill: #fdf3cf; font-size: 14px; font-weight: 700; }
+    .sup-s     { fill: #e2cd86; font-size: 10px; }
+
+    .edge      { fill: none; stroke: #3c557f; stroke-width: 2.2; }
+    .edge-evo  { fill: none; stroke: #6f8fc4; stroke-width: 2.2; stroke-dasharray: 6 5; }
+    .edge-score{ fill: none; stroke: #34b88a; stroke-width: 2.2; stroke-dasharray: 5 5; }
+    .edge-sched{ fill: none; stroke: #6b5a1f; stroke-width: 1.3; stroke-dasharray: 2 6; }
+    .elbl      { fill: #7f97c0; font-size: 10px; font-style: italic; }
+    .title     { fill: #eaf1ff; font-size: 20px; font-weight: 700; }
+    .subtitle  { fill: #7e93b8; font-size: 12px; }
+    .leg-t     { fill: #aebbd4; font-size: 11px; }
+
+    /* dashed edges drift to suggest direction of flow */
+    .edge-evo   { animation: dash 1.1s linear infinite; }
+    .edge-score { animation: dash 0.9s linear infinite; }
+    @keyframes dash { to { stroke-dashoffset: -22; } }
+  </style>
+
+  <rect class="bg" x="0" y="0" width="900" height="540" rx="0"/>
+
+  <!-- ======= TITLE ======= -->
+  <text class="title" x="34" y="42">AI Co-Scientist &#183; multi-agent protein binder design</text>
+  <text class="subtitle" x="34" y="62">one round of generate &#8594; critique &#8594; score &#8594; rank &#8594; evolve, looping forever</text>
+
+  <!-- ======= LAYER PANELS ======= -->
+  <rect class="panel" x="34" y="92" width="832" height="246" rx="12"/>
+  <text class="panel-lbl" x="50" y="113">Layer 1 &#183; Multi-Agent Reasoning &#183; Bedrock Claude</text>
+
+  <rect class="panel" x="34" y="354" width="832" height="120" rx="12"/>
+  <text class="panel-lbl" x="50" y="375">Layer 2 &#183; Protein Scoring Tools &#183; GPU / CPU</text>
+
+  <!-- ============================================================ -->
+  <!-- EDGES (drawn before nodes so nodes sit on top)               -->
+  <!-- ============================================================ -->
+
+  <!-- goal -> supervisor -->
+  <path id="e_goal" class="edge" marker-end="url(#arrow)" d="M150,168 L196,168"/>
+  <!-- supervisor -> generation -->
+  <path id="e_sup_gen" class="edge" marker-end="url(#arrow)" d="M304,168 L348,168"/>
+  <!-- generation -> reflection -->
+  <path id="e_gen_ref" class="edge" marker-end="url(#arrow)" d="M452,168 L496,168"/>
+  <!-- reflection -> proximity -->
+  <path id="e_ref_prox" class="edge" marker-end="url(#arrow)" d="M600,168 L644,168"/>
+  <!-- proximity -> ranking (down + into ranking) -->
+  <path id="e_prox_rank" class="edge" marker-end="url(#arrow)" d="M696,196 L696,236 L500,236 L500,254"/>
+  <!-- ranking -> evolution -->
+  <path id="e_rank_evo" class="edge" marker-end="url(#arrow)" d="M444,284 L356,284"/>
+  <!-- evolution -> ranking (loop back, dashed) -->
+  <path id="e_evo_rank" class="edge-evo" marker-end="url(#arrow-evo)" d="M300,308 L300,332 L500,332 L500,316"/>
+  <text class="elbl" x="312" y="348">refine / combine / reimagine top candidates &#8594; back into the tournament</text>
+  <!-- ranking -> meta-review -->
+  <path id="e_rank_meta" class="edge" marker-end="url(#arrow)" d="M556,284 L648,284"/>
+  <!-- meta-review -> overview -->
+  <path id="e_meta_out" class="edge" marker-end="url(#arrow)" d="M700,256 L700,150 L758,150"/>
+
+  <!-- scoring feedback: tools -> ranking -->
+  <path id="e_score" class="edge-score" marker-end="url(#arrow-score)" d="M505,392 L505,344 L478,344 L478,316"/>
+  <text class="elbl" x="516" y="384" fill="#5fbf9c">objective scores &#8594; Ranking</text>
+
+  <!-- supervisor schedules (subtle dotted, no animation token) -->
+  <path class="edge-sched" d="M250,196 C250,230 360,235 400,254"/>
+
+  <!-- ============================================================ -->
+  <!-- NODES                                                        -->
+  <!-- ============================================================ -->
+
+  <!-- Research goal -->
+  <g>
+    <rect class="io" x="40" y="146" width="110" height="44" rx="10"/>
+    <text class="io-t" x="95" y="170" text-anchor="middle">Research Goal</text>
+    <text class="io-s" x="95" y="184" text-anchor="middle">natural language</text>
+  </g>
+
+  <!-- Supervisor -->
+  <g>
+    <rect class="sup" x="198" y="144" width="106" height="48" rx="10"/>
+    <text class="sup-t" x="251" y="166" text-anchor="middle">Supervisor</text>
+    <text class="sup-s" x="251" y="181" text-anchor="middle">plans &#183; round loop</text>
+  </g>
+
+  <!-- Generation -->
+  <g>
+    <rect class="agent" x="350" y="146" width="102" height="44" rx="10"/>
+    <text class="agent-t" x="401" y="170" text-anchor="middle">Generation</text>
+    <text class="agent-s" x="401" y="184" text-anchor="middle">propose sequences</text>
+  </g>
+
+  <!-- Reflection -->
+  <g>
+    <rect class="agent" x="498" y="146" width="102" height="44" rx="10"/>
+    <text class="agent-t" x="549" y="170" text-anchor="middle">Reflection</text>
+    <text class="agent-s" x="549" y="184" text-anchor="middle">peer review</text>
+  </g>
+
+  <!-- Proximity -->
+  <g>
+    <rect class="agent" x="646" y="146" width="102" height="44" rx="10"/>
+    <text class="agent-t" x="697" y="170" text-anchor="middle">Proximity</text>
+    <text class="agent-s" x="697" y="184" text-anchor="middle">cluster / dedup</text>
+  </g>
+
+  <!-- Ranking (Elo) -->
+  <g>
+    <rect class="agent" x="444" y="256" width="112" height="58" rx="10" stroke="#7fa6e6" stroke-width="2.4"/>
+    <text class="agent-t" x="500" y="280" text-anchor="middle">Ranking</text>
+    <text class="agent-s" x="500" y="296" text-anchor="middle">Elo tournament</text>
+    <text class="agent-s" x="500" y="308" text-anchor="middle">scores + debates</text>
+  </g>
+
+  <!-- Evolution -->
+  <g>
+    <rect class="agent" x="252" y="256" width="104" height="52" rx="10"/>
+    <text class="agent-t" x="304" y="280" text-anchor="middle">Evolution</text>
+    <text class="agent-s" x="304" y="296" text-anchor="middle">refine top ideas</text>
+  </g>
+
+  <!-- Meta-review -->
+  <g>
+    <rect class="agent" x="648" y="256" width="110" height="52" rx="10"/>
+    <text class="agent-t" x="703" y="280" text-anchor="middle">Meta-review</text>
+    <text class="agent-s" x="703" y="296" text-anchor="middle">synthesize overview</text>
+  </g>
+
+  <!-- Output -->
+  <g>
+    <rect class="io" x="760" y="124" width="116" height="52" rx="10"/>
+    <text class="io-t" x="818" y="146" text-anchor="middle">Ranked designs</text>
+    <text class="io-s" x="818" y="162" text-anchor="middle">+ research overview</text>
+  </g>
+
+  <!-- Layer 2 scoring tools -->
+  <g>
+    <rect class="score" x="240" y="396" width="172" height="60" rx="10"/>
+    <text class="score-t" x="326" y="420" text-anchor="middle">ESM2 pseudo-log-likelihood</text>
+    <text class="score-s" x="326" y="436" text-anchor="middle">protein language model</text>
+    <text class="score-s" x="326" y="449" text-anchor="middle">(GPU)</text>
+  </g>
+  <g>
+    <rect class="score" x="430" y="396" width="150" height="60" rx="10"/>
+    <text class="score-t" x="505" y="420" text-anchor="middle">Heuristic fallback</text>
+    <text class="score-s" x="505" y="436" text-anchor="middle">numpy-only</text>
+    <text class="score-s" x="505" y="449" text-anchor="middle">(CPU, always runs)</text>
+  </g>
+  <g>
+    <rect class="score" x="598" y="396" width="186" height="60" rx="10" stroke="#5fe0b4" stroke-width="2.4"/>
+    <text class="score-t" x="691" y="416" text-anchor="middle">Layer 3 &#183; YOUR predictor</text>
+    <text class="score-s" x="691" y="431" text-anchor="middle">fine-tuned ESM2 head</text>
+    <text class="score-s" x="691" y="444" text-anchor="middle">multi-GPU DDP / FSDP</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- ARROW MARKERS                                                -->
+  <!-- ============================================================ -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5a78ad"/>
+    </marker>
+    <marker id="arrow-evo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6f8fc4"/>
+    </marker>
+    <marker id="arrow-score" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#34b88a"/>
+    </marker>
+
+    <radialGradient id="pulseGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffe9a8"/>
+      <stop offset="55%" stop-color="#ffd24d"/>
+      <stop offset="100%" stop-color="#ffd24d" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="scoreGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c7ffe9"/>
+      <stop offset="55%" stop-color="#3ee0a6"/>
+      <stop offset="100%" stop-color="#3ee0a6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ============================================================ -->
+  <!-- ANIMATED FLOW TOKEN (SMIL) - one ~9s loop -->
+  <!-- A single glowing pulse traverses the whole pipeline in order.-->
+  <!-- We stage it as a sequence of motions, each beginning after   -->
+  <!-- the previous one ends, then it restarts.                     -->
+  <!-- ============================================================ -->
+  <g>
+    <circle r="7" fill="url(#pulseGrad)">
+      <!-- visibility: appear at the start, persist through the chain -->
+      <animate id="m1" attributeName="opacity" values="0;1" dur="0.2s"
+               begin="0s;m9.end" fill="freeze"/>
+      <!-- goal -> supervisor -->
+      <animateMotion dur="0.8s" begin="0s;m9.end" fill="freeze">
+        <mpath href="#e_goal"/>
+      </animateMotion>
+      <!-- supervisor -> generation -->
+      <animateMotion id="m2" dur="0.8s" begin="m1.end+0.6s" fill="freeze">
+        <mpath href="#e_sup_gen"/>
+      </animateMotion>
+      <!-- generation -> reflection -->
+      <animateMotion id="m3" dur="0.8s" begin="m2.end" fill="freeze">
+        <mpath href="#e_gen_ref"/>
+      </animateMotion>
+      <!-- reflection -> proximity -->
+      <animateMotion id="m4" dur="0.8s" begin="m3.end" fill="freeze">
+        <mpath href="#e_ref_prox"/>
+      </animateMotion>
+      <!-- proximity -> ranking -->
+      <animateMotion id="m5" dur="1.0s" begin="m4.end" fill="freeze">
+        <mpath href="#e_prox_rank"/>
+      </animateMotion>
+      <!-- ranking -> evolution -->
+      <animateMotion id="m6" dur="0.9s" begin="m5.end+0.5s" fill="freeze">
+        <mpath href="#e_rank_evo"/>
+      </animateMotion>
+      <!-- evolution -> ranking (loop back) -->
+      <animateMotion id="m7" dur="1.0s" begin="m6.end" fill="freeze">
+        <mpath href="#e_evo_rank"/>
+      </animateMotion>
+      <!-- ranking -> meta-review -->
+      <animateMotion id="m8" dur="0.9s" begin="m7.end+0.4s" fill="freeze">
+        <mpath href="#e_rank_meta"/>
+      </animateMotion>
+      <!-- meta-review -> overview -->
+      <animateMotion id="m9" dur="1.0s" begin="m8.end" fill="freeze">
+        <mpath href="#e_meta_out"/>
+      </animateMotion>
+      <!-- fade out right before restart so the reset isn't visible -->
+      <animate attributeName="opacity" values="1;0" dur="0.25s"
+               begin="m9.end" fill="freeze"/>
+    </circle>
+  </g>
+
+  <!-- Independent, continuously looping scoring pulse feeding Ranking -->
+  <g>
+    <circle r="6" fill="url(#scoreGrad)">
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2.4s" repeatCount="indefinite"/>
+      <animateMotion dur="2.4s" repeatCount="indefinite">
+        <mpath href="#e_score"/>
+      </animateMotion>
+    </circle>
+  </g>
+
+  <!-- Gentle highlight ring pulsing on the Ranking node (the hub) -->
+  <circle cx="500" cy="285" r="2" fill="none" stroke="#ffd24d" stroke-width="2" opacity="0">
+    <animate attributeName="r" values="34;58" dur="2.4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0" dur="2.4s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- ======= LEGEND ======= -->
+  <g transform="translate(34,500)">
+    <rect x="0" y="0" width="14" height="14" rx="3" class="agent"/>
+    <text class="leg-t" x="20" y="11">Agent (Layer 1)</text>
+
+    <rect x="150" y="0" width="14" height="14" rx="3" class="sup"/>
+    <text class="leg-t" x="170" y="11">Supervisor</text>
+
+    <rect x="270" y="0" width="14" height="14" rx="3" class="score"/>
+    <text class="leg-t" x="290" y="11">Scoring tool (Layer 2/3)</text>
+
+    <rect x="470" y="0" width="14" height="14" rx="3" class="io"/>
+    <text class="leg-t" x="490" y="11">Input / Output</text>
+
+    <circle cx="627" cy="7" r="6" fill="url(#pulseGrad)"/>
+    <text class="leg-t" x="640" y="11">work flowing</text>
+
+    <circle cx="757" cy="7" r="6" fill="url(#scoreGrad)"/>
+    <text class="leg-t" x="770" y="11">objective scores</text>
+  </g>
+</svg>
