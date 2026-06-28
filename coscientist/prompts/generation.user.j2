@@ -1,0 +1,25 @@
+RESEARCH GOAL:
+{{ goal }}
+
+{% if protein_mode %}
+You are designing PROTEIN variants. Propose amino-acid sequences as point
+mutations of the seed below. Keep each variant within {{ max_mutations }} point
+mutations of the seed and preserve overall length. Put the full mutated sequence
+in the "sequence" field (uppercase one-letter amino acids only).
+SEED_SEQUENCE: {{ seed_sequence }}
+{% else %}
+Set "sequence" to null; the idea lives in the title/summary/rationale.
+{% endif %}
+
+{% if feedback %}
+META-REVIEW FEEDBACK from previous rounds (incorporate this):
+{{ feedback }}
+{% endif %}
+
+{% if existing_titles %}
+AVOID duplicating these existing hypotheses:
+{% for t in existing_titles %}- {{ t }}
+{% endfor %}
+{% endif %}
+
+Generate exactly {{ count }} distinct hypotheses now.

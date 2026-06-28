@@ -1,0 +1,13 @@
+RESEARCH GOAL:
+{{ goal }}
+
+TOP HYPOTHESES AFTER {{ rounds }} ROUNDS (by Elo):
+{% for h in top %}
+[{{ loop.index }}] {{ h.title }} — Elo {{ "%.0f"|format(h.elo) }}, {{ h.wins }}W/{{ h.losses }}L{% if h.protein_score is not none %}, score {{ "%.4f"|format(h.protein_score) }}{% endif %}
+    {{ h.summary }}
+{% endfor %}
+
+AGGREGATE REVIEW SIGNAL:
+{{ review_summary }}
+
+Produce the research overview now.

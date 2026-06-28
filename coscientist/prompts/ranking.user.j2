@@ -1,0 +1,18 @@
+RESEARCH GOAL:
+{{ goal }}
+
+HYPOTHESIS A:
+Title: {{ a.title }}
+Summary: {{ a.summary }}
+Rationale: {{ a.rationale }}
+{% if a.sequence %}Sequence: {{ a.sequence }}{% endif %}
+{% if a.protein_score is not none %}Objective score: {{ "%.4f"|format(a.protein_score) }}{% endif %}
+
+HYPOTHESIS B:
+Title: {{ b.title }}
+Summary: {{ b.summary }}
+Rationale: {{ b.rationale }}
+{% if b.sequence %}Sequence: {{ b.sequence }}{% endif %}
+{% if b.protein_score is not none %}Objective score: {{ "%.4f"|format(b.protein_score) }}{% endif %}
+
+Hold the debate and declare the winner now.
