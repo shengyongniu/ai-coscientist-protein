@@ -49,6 +49,25 @@ class BedrockProvider(LLMProvider):
             return self.model_fast
         return model
 
+    def _inference_config(self, model_id: str, temperature: float, max_tokens: int) -> dict:
+        """Build inferenceConfig, omitting params a model rejects.
+
+        Some newer Claude models (e.g. Opus 4.8) deprecate `temperature` and
+        return a ValidationException if it is supplied. Detect those and drop it.
+        """
+        cfg: dict = {"maxTokens": max_tokens}
+        if self._supports_temperature(model_id):
+            cfg["temperature"] = temperature
+        return cfg
+
+    @staticmethod
+    def _supports_temperature(model_id: str) -> bool:
+        override = os.getenv("COSCIENTIST_DISABLE_TEMPERATURE")
+        if override is not None:
+            return override.strip().lower() not in ("1", "true", "yes")
+        # Models known to reject `temperature` in inferenceConfig.
+        return "opus-4-8" not in model_id
+
     def _to_bedrock_messages(self, messages: list[LLMMessage]) -> list[dict]:
         return [{"role": m.role, "content": [{"text": m.content}]} for m in messages]
 
@@ -67,7 +86,7 @@ class BedrockProvider(LLMProvider):
         kwargs = dict(
             modelId=model_id,
             messages=self._to_bedrock_messages(messages),
-            inferenceConfig={"maxTokens": max_tokens, "temperature": temperature},
+            inferenceConfig=self._inference_config(model_id, temperature, max_tokens),
         )
         if system:
             kwargs["system"] = [{"text": system}]
@@ -110,7 +129,7 @@ class BedrockProvider(LLMProvider):
         kwargs = dict(
             modelId=model_id,
             messages=self._to_bedrock_messages(messages),
-            inferenceConfig={"maxTokens": max_tokens, "temperature": temperature},
+            inferenceConfig=self._inference_config(model_id, temperature, max_tokens),
         )
         if system:
             kwargs["system"] = [{"text": system}]
