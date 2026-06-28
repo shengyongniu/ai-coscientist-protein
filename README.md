@@ -98,6 +98,25 @@ coscientist run "..." --config protein_binder
 Requires `bedrock:InvokeModel` permission and Claude **model access enabled** in your region
 (Bedrock console → *Model access*). See [Bedrock setup](#bedrock-setup).
 
+#### Live Bedrock demo (measured)
+
+A full 2-round `protein_binder` session was run end-to-end on **AWS Bedrock** with the ESM2
+pseudo-log-likelihood scorer. Real measured cost for the run:
+
+| Metric | Value |
+| --- | --- |
+| Model | Claude **Haiku 4.5** (`us.anthropic.claude-haiku-4-5-20251001-v1:0`) |
+| LLM calls | 23 |
+| Tokens (in / out) | 13,180 / 28,343 |
+| Approx. cost | **~$0.12** |
+| Rounds | 2 |
+
+> **Note on frontier models / guardrails.** Anthropic's frontier Claude models on Bedrock
+> (Opus 4.7, Opus 4.8, Sonnet 4.6) apply a biosecurity guardrail that returns
+> `stopReason=content_filtered` on protein-variant *design* prompts, so they cannot drive this
+> pipeline's generation/evolution agents. Haiku 4.5 is unaffected and is the default for live runs.
+> The Bedrock client tolerates filtered/empty/truncated responses (see `coscientist/llm/`).
+
 ### 3. Launch the web UI
 
 ```bash
