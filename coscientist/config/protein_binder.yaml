@@ -1,0 +1,43 @@
+# Protein binder design preset.
+# Demonstrates the Virtual Lab style pipeline: agents propose/evolve protein
+# sequences, scored by ESM2 / a fine-tuned predictor, ranked in an Elo tournament.
+name: protein_binder
+
+rounds: 4
+
+# A concrete default goal so `coscientist run` works out of the box.
+goal: >-
+  Design improved single-domain antibody (nanobody) variants that bind the
+  SARS-CoV-2 spike receptor-binding domain (RBD) with higher predicted stability
+  and affinity than the wild-type, while preserving developability.
+
+# A seed/wild-type sequence the agents mutate from (example nanobody framework).
+seed_sequence: >-
+  QVQLVESGGGLVQAGGSLRLSCAASGRTFSEYAMGWFRQAPGKEREFVAAISWSGGSTYYADSVKGRFTISRDNAKNTVYLQMNSLKPEDTAVYYCAAAGLGTVVSEWDYDYDYWGQGTQVTVSS
+
+protein_mode: true
+
+generation:
+  initial_count: 10
+  evolve_count: 5
+  temperature: 1.0
+  # Max point mutations a generated variant may introduce vs the seed.
+  max_mutations: 6
+
+reflection:
+  temperature: 0.4
+
+ranking:
+  matches_per_round: 16
+  temperature: 0.3
+  score_weight: 0.6  # lean on objective protein scores for protein design
+
+proximity:
+  dedup_threshold: 0.95
+
+evolution:
+  strategies: [refine, combine, simplify, out_of_box]
+  temperature: 1.0
+
+# Use the fine-tuned predictor if a checkpoint is configured, else esm, else heuristic.
+scorer: esm

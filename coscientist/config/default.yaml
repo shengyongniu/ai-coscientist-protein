@@ -1,0 +1,38 @@
+# Default AI Co-Scientist configuration (domain-agnostic).
+name: default
+
+# Number of generate -> reflect -> rank -> evolve rounds (long-horizon loop).
+rounds: 3
+
+generation:
+  # Hypotheses to generate in the first round.
+  initial_count: 8
+  # New hypotheses the Evolution agent adds each subsequent round.
+  evolve_count: 4
+  temperature: 1.0
+
+reflection:
+  temperature: 0.4
+
+ranking:
+  # Pairwise matches per round in the Elo tournament.
+  matches_per_round: 12
+  temperature: 0.3
+  # Weight (0..1) given to objective protein score vs LLM debate when deciding
+  # a match. 0 = pure debate, 1 = pure score.
+  score_weight: 0.5
+
+proximity:
+  # Cosine-similarity threshold above which two hypotheses are deemed duplicates.
+  dedup_threshold: 0.92
+
+evolution:
+  # Strategies the Evolution agent rotates through.
+  strategies: [refine, combine, simplify, out_of_box]
+  temperature: 1.0
+
+# Protein scorer: heuristic | esm | predictor
+scorer: heuristic
+
+# Whether hypotheses are expected to carry an amino-acid sequence.
+protein_mode: false
