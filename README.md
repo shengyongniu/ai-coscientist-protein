@@ -4,12 +4,12 @@
 > systems from two *Nature* papers — Google's [AI co-scientist](https://www.nature.com/articles/s41586-026-10644-y)
 > and Stanford's [Virtual Lab](https://www.nature.com/articles/s41586-025-09442-9) —
 > specialized for **protein binder design** and grounded in **real ML scores**, including a
-> protein-fitness predictor you fine-tune across **multiple GPUs**.
+> protein-fitness predictor fine-tuned across **multiple GPUs**.
 
-You give it a natural-language **research goal** (e.g. *"design improved nanobody binders for
-the SARS-CoV-2 spike RBD"*). A coalition of specialized LLM agents then **generates, peer-reviews,
+Given a natural-language **research goal** (e.g. *"design improved nanobody binders for
+the SARS-CoV-2 spike RBD"*), a coalition of specialized LLM agents **generates, peer-reviews,
 ranks (via an Elo tournament), and evolves** candidate protein sequences over many rounds —
-with the tournament grounded in objective scores from ESM2 and a model *you* trained — and emits
+with the tournament grounded in objective scores from ESM2 and a fine-tuned predictor — and emits
 a final ranked design list plus a research overview.
 
 <p align="center">
@@ -29,11 +29,11 @@ It deliberately demonstrates four hard skills in one coherent system:
 | **Multi-agent orchestration** | 6 specialized agents + a Supervisor + an Elo "tournament of ideas" (`coscientist/agents`, `coscientist/core`) |
 | **Long-horizon reasoning** | Durable, resumable, multi-round generate→critique→score→rank→evolve loop with SQLite-persisted memory across hundreds of LLM calls (`coscientist/core/supervisor.py`, `store.py`) |
 | **Multi-GPU training** | DDP/FSDP fine-tuning of an ESM2 protein-fitness predictor with throughput + scaling logging (`training/`) |
-| **Protein / bio** | Sequence design scored by ESM2 pseudo-log-likelihood and your fine-tuned predictor (`coscientist/protein/`) |
+| **Protein / bio** | Sequence design scored by ESM2 pseudo-log-likelihood and a fine-tuned predictor (`coscientist/protein/`) |
 
 It is **always runnable**: with no AWS and no GPU it falls back to a deterministic mock LLM and a
-CPU heuristic scorer, so `pytest` and the full UI work offline. Add Bedrock for real agents; add a
-GPU for real protein scores; add your trained checkpoint to ground the tournament in your own model.
+CPU heuristic scorer, so `pytest` and the full UI work offline. Add Bedrock for real agents, a
+GPU for real protein scores, and a trained checkpoint to ground the tournament in a custom model.
 
 ## Three-layer architecture
 
@@ -54,7 +54,7 @@ flowchart TD
     subgraph L2 [Layer 2: Protein Scoring Tools · GPU/CPU]
       esm[ESM2 pseudo-log-likelihood]
       heur[Heuristic CPU fallback]
-      mymodel["Layer 3: YOUR fine-tuned predictor"]
+      mymodel["Layer 3: fine-tuned predictor"]
     end
     tools -->|objective scores| rank
     meta --> overview["Ranked designs + research overview"]
@@ -70,14 +70,14 @@ flowchart TD
 - **Evolution** — refines / combines / simplifies / reimagines the top candidates each round.
 - **Meta-review** — synthesizes the tournament into a research overview + proposed wet-lab experiments.
 
-### Protein scoring (Layer 2) and your trained predictor (Layer 3)
+### Protein scoring (Layer 2) and the trained predictor (Layer 3)
 Agents score sequences through one `Scorer` interface with graceful degradation:
-`predictor` (your fine-tuned ESM2 head) → `esm` (ESM2 PLL) → `heuristic` (numpy-only CPU fallback).
+`predictor` (fine-tuned ESM2 head) → `esm` (ESM2 PLL) → `heuristic` (numpy-only CPU fallback).
 
 ## Quickstart
 
 ```bash
-git clone <this-repo> && cd ai-coscientist
+git clone https://github.com/shengyongniu/ai-coscientist-protein && cd ai-coscientist-protein
 python -m venv .venv && source .venv/bin/activate   # Python 3.11+
 pip install -r requirements.txt
 ```
@@ -92,7 +92,7 @@ COSCIENTIST_LLM_PROVIDER=mock coscientist run \
   --config protein_binder --scorer heuristic
 ```
 
-You'll see a live Elo leaderboard in the terminal and an `overview.md` written to
+A live Elo leaderboard prints in the terminal and an `overview.md` is written to
 `data/artifacts/<session>/final/`.
 
 ### 2. Run with real Bedrock Claude agents
@@ -103,7 +103,7 @@ export COSCIENTIST_LLM_PROVIDER=bedrock
 coscientist run "..." --config protein_binder
 ```
 
-Requires `bedrock:InvokeModel` permission and Claude **model access enabled** in your region
+Requires `bedrock:InvokeModel` permission and Claude **model access enabled** in the target region
 (Bedrock console → *Model access*). See [Bedrock setup](#bedrock-setup).
 
 #### Live Bedrock demo (measured)
@@ -154,7 +154,7 @@ python -m training.train --dataset synthetic --epochs 1 --max-train 256
 ./training/launch_multi_gpu.sh 4 ddp  facebook/esm2_t12_35M_UR50D   # DDP
 ./training/launch_multi_gpu.sh 4 fsdp facebook/esm2_t33_650M_UR50D  # FSDP (sharded)
 
-# Plot curves, then ground the agents in your model:
+# Plot curves, then ground the agents in the trained model:
 python -m training.plot_curves
 export COSCIENTIST_SCORER=predictor COSCIENTIST_PREDICTOR_CKPT=checkpoints/esm2_fitness
 coscientist run --config protein_binder

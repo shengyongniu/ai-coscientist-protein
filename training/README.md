@@ -4,7 +4,7 @@ This directory contains the **multi-GPU training** component of the AI
 Co-Scientist. It fine-tunes an [ESM2](https://huggingface.co/facebook/esm2_t12_35M_UR50D)
 protein language model into a scalar **fitness/stability predictor**. The
 resulting checkpoint plugs into the agent loop as the highest-signal protein
-`Scorer`, so the Elo tournament is grounded in a model *you* trained.
+`Scorer`, so the Elo tournament is grounded in a fine-tuned model.
 
 ## Why fine-tune ESM2?
 
@@ -76,6 +76,6 @@ coscientist run --config protein_binder
 
 ## Running on AWS
 
-With 384 G/VT vCPU quota you can launch a `g5.12xlarge` (4x A10G, 48 vCPU). See
+With 384 G/VT vCPU quota a `g5.12xlarge` (4x A10G, 48 vCPU) can be launched. See
 [`../scripts/aws_train.md`](../scripts/aws_train.md) for a copy-paste launch +
 train + teardown recipe that stays within the credit budget.
