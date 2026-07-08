@@ -136,7 +136,7 @@ coscientist serve            # then open http://127.0.0.1:8000
   <img src="docs/images/ui_running.png" width="49%" alt="Live multi-agent activity feed"/>
 </p>
 
-The UI streams every agent action over a websocket, shows a live-updating Elo leaderboard with
+The UI streams every agent action over a WebSocket, shows a live-updating Elo leaderboard with
 protein scores, and renders the final research overview.
 
 ## Multi-GPU training (the differentiator)
@@ -196,7 +196,7 @@ coscientist/
   config/      default.yaml + protein_binder.yaml presets
   cli.py       `coscientist run | serve | sessions`
 training/      multi-GPU DDP/FSDP fine-tuning (train, model, data, eval, plot, launch script)
-server/        FastAPI websocket backend + single-file React UI
+server/        FastAPI WebSocket backend + single-file React UI
 tests/         Elo / store / proximity / LLM / mocked end-to-end
 ```
 
